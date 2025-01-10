@@ -1,0 +1,92 @@
+﻿
+#author doug@dougbraun.com
+#idString PROTEK,Protek D440
+#name Protek D440
+#handle PD440
+#port comfixedbaud
+#baudrate 1200N71Dr
+#driver DMM2
+#subDriver Definition
+
+
+; Data block: 11 ascii characters starting with <CR>.
+; (The meter sends the CR immediately after the last data byte,
+; but it is the only character that we can use to reliably identify
+; the beginning of the data. Thus, only every other packet
+; is actually processed.)
+
+#dataFormat 11 0x0d 0x7f
+
+; Work around the above issue
+#readingDelay 5
+
+; Everything in positions 5..10 is the (usually numeric) value (Up to 5
+; digits, plus decimal point).
+#digits 5 6
+
+; Position 4 is a negative sign (or blank) for pretty much all data types
+#sign v(4, 0x2d)
+
+; Message must start with CR 
+#range - !v(0, 0x0d) 
+
+; If the 4th byte is '1'. it is AC.  (This applies to current settings.)
+#rangeAC v(3, 0x31)
+#rangeDC !v(3, 0x31)
+
+; If the second byte is '7', the value is a temperature (C or F depending on byte 3).
+#range TempF v(1,0x37) & v(2,0x30)
+#range TempC v(1,0x37) & v(2,0x31)
+
+; If the second byte is '4', the value is DC millivolts.
+#range V *0.001 v(1,0x34)
+
+; If the second byte is '8', the value is DC volts.
+#range V v(1,0x38)
+
+; If the second byte is '2', the value is DC volts (diode forward drop).
+#range V v(1,0x32)
+
+; If the second byte is '9', the value is AC volts. (The AC byte will also be
+# set.)
+#range V v(1,0x39)
+
+; If the second byte is '6', the value is AC/DC milliamps.
+#range A *0.001 v(1,0x36)
+
+; If the second byte is '5', the value is AC/DC amps.
+#range A v(1,0x35)
+
+; If the second byte is ' ', the value is Hz
+; The third byte specifies Hz/kHz
+
+#range Hz v(1,0x20) & v(2, 0x30)
+#range Hz v(1,0x20) & v(2, 0x31)
+#range Hz *1000 v(1,0x20) & v(2, 0x32)
+#range Hz *1000 v(1,0x20) & v(2, 0x33)
+
+; If the second byte is '3', the value is Ohms
+; The third byte specifies Ohm/kOhm/mOhm
+
+#range Ohm v(1,0x33) & v(2, 0x30)
+#range Ohm v(1,0x33) & v(2, 0x31)
+#range Ohm *1000 v(1,0x33) & v(2, 0x32)
+#range Ohm *1000 v(1,0x33) & v(2, 0x33)
+#range Ohm *1e6 v(1,0x33) & v(2, 0x34)
+#range Ohm *1e6 v(1,0x33) & v(2, 0x35)
+
+; If the second byte is '1', the value is uF capacitance.
+#range F /1e6 v(1,0x31)
+
+; If the second byte is '-' and the third is '0', the value is IG RPM
+;#range RPM v(1,0x2d) & v(2, 0x30)
+
+; If the second byte is 'L' and the third is '0', the value is IP RPM
+;#range RPM v(1,0x4c) & v(2, 0x30)
+
+; TODO: How to define RPM as a data type?
+
+; Other data from the RPM screens is transmitted, with different values of the
+; third byte.
+
+
