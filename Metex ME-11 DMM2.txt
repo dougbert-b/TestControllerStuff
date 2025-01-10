@@ -1,0 +1,46 @@
+﻿
+#author dougbraun
+#idString METEX,Metex ME-11 DMM2
+#name Metex ME-11 DMM2
+#handle MetexMD11DMM2
+#port comfixedbaud
+#baudrate 600N72Dr
+#driver DMM2
+#subDriver Definition
+
+
+; Sending any character will trigger a data packet.
+#eol \_
+#poll D
+
+; 13 ASCII chars plus final <CR>
+;#dataFormat 14 0 0
+#dataFormat 14 0x40 0x40 
+
+#readingDelay 3
+#cmdDelayTime 500
+
+; Numeric value (including decimal point) in positions 4..8
+#digits 4 5
+
+; Message must end with CR 
+#range - !v(13, 0x0d) 
+
+; Position 3 is a negative sign (or blank) for pretty much all data types
+#sign v(3, 0x2d)
+
+; AC voltage/current values start with "AC".
+#rangeAC v(0, 0x41) & v(1, 0x43)
+
+; Voltage values end with 'V' (but reject diode voltage values).
+#range V v(12, 0x56) & !v(0, 0x44)
+
+; Resistance values end with 'm'
+#range Ohm v(13, 0x6d)
+
+; Diode forward voltage values begin with "DI"
+#range V v(0, 0x44) & v(1, 0x49)
+
+; Current values end with 'A'
+#range A v(12, 0x41)
+

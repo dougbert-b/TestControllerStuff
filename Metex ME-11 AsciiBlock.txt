@@ -1,0 +1,38 @@
+﻿
+#author dougbraun
+#idString METEX,Metex ME-11 AsciiBlock
+#name Metex ME-11 AsciiBlock
+#handle MetexMD11AsciiBlock
+#port comfixedbaud
+#baudrate 600N72Dr
+#driver AsciiBlock
+
+#value VooltageDC V si DCV,DCmV
+#value CurrentDC A si DCA,DCmA
+#value VoltageAC V si ACV,ACmV
+#value CurrentAC A si ACA,ACmA
+#value Diode V si DImV
+
+#rxEnd \r
+
+; for binary Block driver:
+; #rxLength 14
+; #rxFormat 0s2 3e6 9s4
+
+#rxFormat .*?([A-Z]+).*?([0-9.-]+).*?([mA-Z]+)
+#askValues values?
+#askValuesMathFormat getElement(value,1)
+
+#askMode values?
+#askModeMathFormat getElement(value, 0)+getElement(value, 2)
+#modeFromValue getElement(value, 0)+getElement(value, 2)
+
+
+; Sending any character will trigger a data packet.
+#poll XX
+#pollPause 2000
+#cmdDelayTime 2000
+
+#interfaceType DMM
+#interface readValue 0
+

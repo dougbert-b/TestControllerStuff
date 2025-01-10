@@ -1,0 +1,36 @@
+﻿
+#author dougbraun
+#idString METEX,Metex ME-11 Block
+#name Metex ME-11 Block
+#handle MetexMD11Block
+#port comfixedbaud
+#baudrate 600N72Dr
+#driver Block
+
+#value VollltageDC V si DCV,DCmV
+#value VoltageAC V si ACV,ACmV
+#value CurrentDC A si DCA,DCmA
+#value CurrentAC A si ACA,ACmA
+#value Resistance ohm si OHMOhm,OHOhm,OHkOhm
+#value Diode V si DImV
+
+#rxLength 14
+#rxEnd \r
+#rxFormat 0s2 3e6 9s4
+
+#askValues values?
+#askValuesMathFormat getElement(value,1)
+
+#askMode values?
+#askModeMathFormat getElement(value, 0)+getElement(replace(value,"\""," "), 2)
+#askModeValue getElement(value, 0)+getElement(replace(value,"\""," "), 2)
+
+
+; Sending any character will trigger a data packet.
+#pollPause 2000
+#cmdDelayTime 2000
+#poll "DD"
+
+#interfaceType DMM
+#interface readValue 0
+

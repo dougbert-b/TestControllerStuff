@@ -1,0 +1,29 @@
+﻿
+#author dougbraun
+#idString METEX,Metex ME-11
+#name Metex ME-11
+#handle MetexMD11
+#port comfixedbaud
+#baudrate 600N72Dr
+#eol \_
+#driver SingleValue
+
+; Sending any character will trigger a data packet.
+#askValues DD
+#readingDelay 2000
+
+#value VoltageDC V si DCV
+#value VoltageAC V si ACV
+#value CurrentDC A si DCA
+#value CurrentAC A si ACA
+#value Resistance ohm si OHOhm
+#value Diode V si DIV
+
+#valueText OL OL
+#valueText OL O.L
+
+
+
+#interfaceType DMM
+#interface readValue 0
+
