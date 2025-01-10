@@ -1,0 +1,354 @@
+﻿
+;WS: wrong scale for current setting corrected, max current corrected from 6 to 6.1A, misleading note removed
+
+#metadef
+#author MikeLud
+#idString Riden,Riden RD6006
+#name Riden RD6006
+#handle RD6006
+#replacetext RD60xx 60062
+#removeline 12A
+#replaceText MaxCurrent 6.100
+#replaceText MaxOCP 6.200
+#replaceText CurrentScaleFactor 1000
+#replaceText VoltageScaleFactor 100
+#replaceText PowerScaleFactor 100
+
+#metadef
+#author MikeLud
+#idString Riden,Riden RD6012
+#name Riden RD6012
+#handle RD6012
+#replacetext RD60xx 60121
+#replaceText MaxCurrent 12.000
+#replaceText MaxOCP 12.100
+#replaceText CurrentScaleFactor 100
+#replaceText VoltageScaleFactor 100
+#replaceText PowerScaleFactor 100
+
+; DB: These 6012P settings are correct only for the 0-12A range setting!
+; If the 6012P is set to the 0-6A range, the CurrentScaleFactor needs to be
+; 100.  BTW, the Riden PC software can query and set the Ampere range
+; via the serial port.
+; The memory settings seem to be broken: The I/V data values are mixed up.
+
+#metadef
+#author Doug Braun
+#idString Riden,Riden RD6012P
+#name Riden RD6012P
+#handle RD6012P
+#replacetext RD60xx 60125
+#replaceText MaxCurrent 12.000
+#replaceText MaxOCP 12.100
+#replaceText CurrentScaleFactor 1000
+#replaceText VoltageScaleFactor 1000
+#replaceText PowerScaleFactor 1000
+
+#metadef
+#idString Riden,Riden RD6018
+#name Riden RD6018
+#handle RD6018
+#replacetext RD60xx 60181
+#replaceText MaxCurrent 18.100
+#replaceText MaxOCP 18.200
+#replaceText CurrentScaleFactor 100
+#replaceText VoltageScaleFactor 100
+#replaceText PowerScaleFactor 100
+
+
+#meta
+#author MikeLud
+#idString Riden,Riden RD60xx
+#name Riden RD60xx
+#handle RD60xx
+#port comfixedbaud
+#baudrate 115200
+#driver Modbus
+
+#verifyDevice RD60xx Model?
+
+#scpiCmd SysTC? holding? 0x05
+#scpiCmd VSet holding 0x08 (value) *VoltageScaleFactor
+#scpiCmd VSet? holding? 0x08 /VoltageScaleFactor
+#scpiCmd ISet holding 0x09 (value) *CurrentScaleFactor
+#scpiCmd ISet? holding? 0x09 /CurrentScaleFactor
+#scpiCmd VOut? holding? 0x0a /VoltageScaleFactor
+#scpiCmd IOut? holding? 0x0B /100
+#scpiCmd Watt? holding? 0x0D /PowerScaleFactor
+#scpiCmd ERROR? holding? 0x10
+#scpiCmd MODE? holding? 0x11
+#scpiCmd OUTPUT? holding? 0x12
+#scpiCmd OUTPUT holding 0x12 (value)
+#scpiCmd MEM? holding? 0x13
+#scpiCmd MEM holding 0x13 (value)
+#scpiCmd BattM? holding? 0x20
+#scpiCmd BattV? holding? 0x21 /100
+#scpiCmd BattT? holding? 0x23
+#scpiCmd Ah? holdingl? 0x26 /1000
+#scpiCmd Wh? holdingl? 0x28 /1000
+#scpiCmd TakeOK? holding? 0x42
+#scpiCmd TakeOK holding 0x42 (value)
+#scpiCmd TakeOut? holding? 0x43
+#scpiCmd TakeOut holding 0x43 (value)
+#scpiCmd BootP? holding? 0x44
+#scpiCmd BootP holding 0x44 (value)
+#scpiCmd Buzzer? holding? 0x45
+#scpiCmd Buzzer holding 0x45 (value)
+#scpiCmd Logo? holding? 0x46
+#scpiCmd Logo holding 0x46 (value)
+#scpiCmd BL? holding? 0x48
+#scpiCmd BL holding 0x48 (value)
+#scpiCmd M0OVP? holding? 0x52 /VoltageScaleFactor
+#scpiCmd M0OVP holding 0x52 (value) *VoltageScaleFactor
+#scpiCmd M0OCP? holding? 0x53 /1000
+#scpiCmd M0OCP holding 0x53 (value) *1000
+#scpiCmd MN? holding? 0x80
+:setvar: MNS=int(value)
+#scpiCmd MN holding 0x80 (value)
+#scpiCmd MV? holding? (MNS) /VoltageScaleFactor
+#scpiCmd MV holding (MNS) (value) *VoltageScaleFactor
+#scpiCmd MI? holding? (MNS+1) /CurrentScaleFactor
+#scpiCmd MI holding (MNS+1) (value) *CurrentScaleFactor
+#scpiCmd OVP? holding? (MNS+2) /100
+#scpiCmd OVP holding (MNS+2) (value) *100
+#scpiCmd OCP? holding? (MNS+3) /1000
+#scpiCmd OCP holding (MNS+3) (value) *1000
+
+#scpiCmd values? holding? 0x08 /VoltageScaleFactor;holding? 0x09 /CurrentScaleFactor;holding? 0x0A /VoltageScaleFactor;holding? 0x0B /CurrentScaleFactor;holding? 0x0D /PowerScaleFactor;holding? 0x21 /100;holding? 0x23;holdingl? 0x26 /1000;holdingl? 0x28 /1000
+
+#scpiCmd model? holding? 0x00
+#scpiCmd getDeviceSW? holding? 0x03 /100
+#scpiCmd getDeviceSN? holdingl? 0x01
+
+
+
+; A list of possible column name with unit and formatter (SI, Time, Int, D0..D6)
+#value VoltageSet V D 
+#value CurrentSet A D3
+#value Voltage V D2 
+#value Current A D3 
+#value Power W D2
+#value BatteryVoltage V D2
+#value BatteryTemp °C D0
+#value AmpH Ah D3
+#value WattH Wh D3
+ 
+
+; This is a single line command
+#askValues values?
+
+;Accept this delay when reading values (seconds)
+#readingDelay 5
+
+; Initial commands to meter when establishing connection
+#initCmd MN?
+
+; Final command to meter before breaking connection
+#finalCmd OUTPUT 0
+
+; Used when output off button is pressed
+#outputOff OUTPUT 0
+
+#interfaceType PS
+#interface setVoltage VSet (value)
+#interface setCurrent ISet (value)
+#interface setOn OUTPUT (value)
+#interface getVoltage VOut?
+#interface getCurrent IOut?
+#interface getOn OUTPUT?
+#interface readVoltage 0
+#interface readCurrent 1
+
+
+
+; Strings to configure device in different modes
+; First parameter must match a #value (4 parameter) and second parameter must match what #askMode returns
+; First parameter is also used in shortcut menu
+;#cmdMode 
+
+; Setup menu functions
+; The parameters on the first line is: type name page 
+; Settings on the following lines are:
+; read: SCPI to read value from device, is used to synchronize when opening setup page or setting equal named fields. Not always used
+; readformat: Parse read value.
+; write: Send the value to device, this field is used in combination with data fields in the details to send updates to device.
+; tip: Add this tip to all components for this input field.
+
+#cmdSetup buttonsOn Output
+:read: OUTPUT?
+:write: OUTPUT 
+:tip: Turn output on or off
+:updatealloff:
+:update: Output
+:updatedelayed: 0.3 
+Off 0
+On 1
+
+#cmdSetup radio Voltage Main 
+:read: VSet?
+:write: VSet
+:update: Voltage
+:update: 0.3 
+:tip: Setup this voltage
+3.3V 3.3
+5V 5.0
+12V 12.0
+24V 24.0
+48V 48.0
+60V 60.0
+
+#cmdSetup radio Current Main 
+:read: ISet?
+:write: ISet
+:update: Current
+:updatedelayed: 0.3 
+:tip: Output will current limit at this current
+100mA 0.1
+250mA 0.25
+500mA 0.5
+1A 1.0
+3A 3.0
+6A 6.0
+12A 12.0
+
+#cmdSetup number Voltage Main 
+:read: VSet?
+:write: VSet
+:tip: Setting this voltage, does not turn output on/off
+V 0.00 60.00
+
+#cmdSetup number Current Main
+:read: ISet?
+:write: ISet
+:tip: Setting this current, does not turn output on/off
+A 0.000 MaxCurrent
+
+#cmdSetup combobox Memory Main
+:read: MEM?
+:write: MEM 
+:tip: Setting this memory, turns output off
+:update: Voltage Current
+:updatedelayed: 0.3 
+M0 0
+M1 1
+M2 2
+M3 3
+M4 4
+M5 5
+M6 6
+M7 7
+M8 8
+M9 9
+
+#cmdSetup indicatornum Status Main
+:read: Mode?
+CV 0 blue
+CC 1 red
+
+#cmdSetup indicatornum Status Main
+:read: ERROR?
+OK 0 blue
+OVP 1 red
+OCP 2 red
+
+#cmdSetup indicatornum Status Main
+:read: BattM?
+Batt_Mode_Off 0 blue
+Batt_Mode_On 1 red
+
+;#cmdSetup Updater update
+;:update: Status
+;2
+
+#cmdSetup number OVP Limits
+:read: M0OVP?
+:write: M0OVP
+:tip: Output will turn off if it is above this voltage
+V 0 62
+
+#cmdSetup number OCP Limits
+:read: M0OCP?
+:write: M0OCP
+:tip: Output will turn off if it is above this voltage
+A 0 MaxOCP
+
+#cmdSetup radio Take_Ok Settings
+:read: TakeOK?
+:write: TakeOK
+:tip: Turn on the “Take OK”, a confirmation window will pop up when you quick call out a data group.
+On 1
+Off 0
+
+#cmdSetup radio Take_Out Settings
+:read: TakeOut?
+:write: TakeOut
+:tip: Turn on the “Take out”, the output will be turn on automatically when you call out a data group
+On 1
+Off 0
+
+#cmdSetup radio Boot_Power Settings
+:read: BootP?
+:write: BootP
+:tip: Turn on the “Boot Power”, it will turn on the output automatically when started
+On 1
+Off 0
+
+#cmdSetup radio Buzzer Settings
+:read: Buzzer?
+:write: Buzzer
+:tip: Turn on the “Buzzer”, you will hear button tune when press the buttons
+On 1
+Off 0
+
+#cmdSetup radio Logo Settings
+:read: Logo?
+:write: Logo
+:tip: Turn on the “Logo”, it will display Logo first when booting up
+On 1
+Off 0
+
+#cmdSetup slider Backlight Settings
+:read: BL?
+:write: BL
+:tip: 0=Minimal brightness, 5=Maximal brightness
+_ 0 5
+
+#cmdSetup comboboxhot Memory Memory
+:read: MN?
+:write: MN
+:update: V-Set I-Set OVP OCP
+:updatedelayed: 0.3
+M0 80
+M1 84
+M2 88
+M3 92
+M4 96
+M5 100
+M6 104
+M7 108
+M8 112
+M9 116
+
+#cmdSetup number V-Set Memory
+:read: MV?
+:write: MV
+:tip: Output will turn off if it is above this voltage
+V 0 60
+
+#cmdSetup number I-Set Memory
+:read: MI?
+:write: MI
+:tip: Output will turn off if it is above this voltage
+V 0 MaxCurrent
+
+#cmdSetup number OVP Memory
+:read: OVP?
+:write: OVP
+:tip: Output will turn off if it is above this voltage
+V 0 62
+
+#cmdSetup number OCP Memory
+:read: OCP?
+:write: OCP
+:tip: Output will turn off if it is above this voltage
+V 0 MaxOCP
