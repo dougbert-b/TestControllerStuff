@@ -7,3 +7,6 @@ This works nicely.  One issue: I don't know how to get TestController to recogni
 The "Metex ME-11" files are several attempts to interface a Metex ME-11 DMM, using different TestController drivers.
 At the moment, the only one that sort of works is "Metex ME-11.txt", which uses TestController's SingleValue driver.
 It displays all the data, but it is laggy - there is some data communication timing issue.
+
+MastechLCR.txt  is a work in progress, for a Mastech MS5308 LCR meter.  It should work with other brands of LCR meters that use the
+same Cyrustek ES51919 chip set.
