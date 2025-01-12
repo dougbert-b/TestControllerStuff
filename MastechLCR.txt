@@ -8,19 +8,22 @@
 #baudrate 9600N81Dr
 #driver Block
 
-#value Cs F si M_CS
-#value Cp f si M_CP
-#value Ls H si M_LS
-#value Lp H si M_LP
+#value Cs F si M_CS_D,M_CS_Q,M_CS_R,M_CS_T
+#value Cp f si M_CP_D,M_CP_Q,M_CP_R,M_CP_T
+#value Ls H si M_LS_D,M_LS_Q,M_LS_R,M_LS_T
+#value Lp H si M_LP_D,M_LP_Q,M_LP_R,M_LP_T
+
 #value Rs ohm si M_RS
 #value Rp ohm si M_RP
-#value DCR ohm si M_DCR
-#value Freq Hz si M_CS,M_CP,M_LS,M_LP,M_RS,M_RP
-#value VAL2 - si M_CS,M_CP,M_LS,M_LP
 
-;#value Q - si M_Q
-;#value D - si M_D
-;#value Theta - si M_T
+#value DCR ohm si M_DCR
+
+#value Freq Hz si M_CS_D,M_CS_Q,M_CS_R,M_CS_T,M_CP_D,M_CP_Q,M_CP_R,M_CP_T,M_LS_D,M_LS_Q,M_LS_R,M_LS_T,M_LP_D,M_LP_Q,M_LP_R,M_LP_T,M_RS,M_RP
+
+#value D - d3 M_CS_D,M_CP_D,M_LS_D,M_LP_D
+#value Q - d3 M_CS_Q,M_CP_Q,M_LS_Q,M_LP_Q
+#value Reff ohm si M_CS_R,M_CP_R,M_LS_R,M_LP_R
+#value Theta - d1 M_CS_T,M_CP_T,M_LS_T,M_LP_T
 
 #rxLength 17
 #rxStart \x00\x0d
@@ -70,11 +73,18 @@
 
 #askMode values?
 
-#askModeMathFormat getElement("M_LS M_LP M_CS M_CP M_RS M_RP M_DCR M_DCR",
-                              2*(getElement(value,2)-1)+getElement(value,0));
+#askModeMathFormat getElement(value,2)==4 ? "M_DCR" :
+		      "M_" + getElement("L C R",getElement(value,2)-1) +
+		      (getElement(value,0)!=0 ? "P" : "S") +
+		      (getElement(value,6)==0 ? "" :
+			  ("_" + getElement("D Q R T",getElement(value,6)-1)));
 
-#modeFromValue     getElement("M_LS M_LP M_CS M_CP M_RS M_RP M_DCR M_DCR",
-                              2*(getElement(value,2)-1)+getElement(value,0));
+#modeFromValue     getElement(value,2)==4 ? "M_DCR" :
+		      "M_" + getElement("L C R",getElement(value,2)-1) +
+		      (getElement(value,0)!=0 ? "P" : "S") +
+		      (getElement(value,6)==0 ? "" :
+			  ("_" + getElement("D Q R T",getElement(value,6)-1)));
+
 
 
 
