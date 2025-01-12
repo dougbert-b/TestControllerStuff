@@ -1,0 +1,68 @@
+﻿; See https://github.com/4x1md/de5000_lcr_py 
+
+#author dougbraun
+#idString Mastech,Mastech LCR
+#name Mastech LCR 
+#handle MastechLCR
+#port comfixedbaud
+#baudrate 9600N81Dr
+#driver Block
+
+#value Freq Hz si M_CS,M_CP,M_LS,M_LP,M_RS,M_RP
+#value Cs F si M_CS
+#value Cp f si M_CP
+#value Ls H si M_LS
+#value Lp H si M_LP
+#value Rs ohm si M_RS
+#value Rp ohm si M_RP
+#value DCR ohm si M_DCR
+#value VAL2 - si M_CS,M_CP,M_LS,M_LP
+#value Q - si M_Q
+#value D - si M_D
+#value Theta - si M_T
+
+#rxLength 17
+#rxStart \x00\x0d
+#rxEnd \x0d\x0a
+
+; byte   meaning
+; 2      flags, including serial/parallel
+; 3      frequency
+; 5      primary data type
+; 6-7    primary unscaled value
+; 8      primary multiplier and units
+; 10     secondary data type
+; 11-12  secondary unscaled data (signed for theta)
+; 13     secondary multiplier and units
+
+#rxFormat 2b7 3u1 5u1 6ur2 8u1 10u1 11ir2 13u1
+
+#askValues values?
+#askValuesMathFormat
+    (getElement("100 120 1000 10000 100000", (getElement(value,1)>>5)&7))
+    + " " +
+    (getElement(value, 3) *
+	pow(10, -(getElement(value,4)&7)) *
+	pow(10, getElement("0 0 3 6 0 -6 -3 0 3 -12 -9 -6 -3 0 0 0 0", (getElement(value,4)>>3)&15)))
+    + " " +
+    (getElement(value, 6) *
+	pow(10, -(getElement(value,7)&7)) *
+	pow(10, getElement("0 0 3 6 0 -6 -3 0 3 -12 -9 -6 -3 0 0 0 0", (getElement(value,7)>>3)&15)))
+
+
+#askMode values?
+
+#askModeMathFormat getElement("M_LS M_LP M_CS M_CP M_RS M_RP M_DCR M_DCR",
+                              2*(getElement(value,2)-1)+getElement(value,0))
+
+#modeFromValue     getElement("M_LS M_LP M_CS M_CP M_RS M_RP M_DCR M_DCR",
+                              2*(getElement(value,2)-1)+getElement(value,0))
+
+
+
+
+
+
+#interfaceType LCR
+#interface readValue 0
+
