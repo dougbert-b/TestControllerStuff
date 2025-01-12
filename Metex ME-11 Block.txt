@@ -1,5 +1,6 @@
-﻿
-#author dougbraun
+﻿;  Works OK now!
+
+#author doug@dougbraun.com
 #idString METEX,Metex ME-11 Block
 #name Metex ME-11 Block
 #handle MetexMD11Block
@@ -16,19 +17,24 @@
 
 #rxLength 14
 #rxEnd \r
-#rxFormat 0s2 3e6 9s4
+#rxFormat 0s2 3s6 9s4
 
 #askValues values?
-#askValuesMathFormat getElement(value,1)
+#askValuesMathFormat match(getElement(replace(value,"\""," "), 1),".*L.*") ?  1e100 :
+			  (getElement(replace(value, "\"", " "), 1) *
+			      (match(getElement(replace(value,"\""," "), 2), "MOhm") ? 1e6 :
+				  (match(getElement(replace(value,"\""," "), 2), "kOhm") ? 1e3 : 
+				      (match(getElement(replace(value,"\""," "), 2), "m.*") ? 0.001 : 1.0))));
+
 
 #askMode values?
 #askModeMathFormat getElement(value, 0)+getElement(replace(value,"\""," "), 2)
-#askModeValue getElement(value, 0)+getElement(replace(value,"\""," "), 2)
+#modeFromValue getElement(value, 0)+getElement(replace(value,"\""," "), 2)
 
 
 ; Sending any character will trigger a data packet.
-#pollPause 2000
-#cmdDelayTime 2000
+; Poll max once per second.  The meter transmits the data bytes rather slowly.
+#pollPause 1000
 #poll "DD"
 
 #interfaceType DMM
